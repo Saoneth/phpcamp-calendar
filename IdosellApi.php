@@ -1,17 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Paweł
- * Date: 2017-06-01
- * Time: 13:45
- */
 
-/**
- * @param $curl
- * @param $request_json
- * @param $headers
- * @return mixed
- */
 class IdosellApi
 {
     private $clientId;
@@ -148,4 +136,14 @@ class IdosellApi
 
         return $data['result']['clients'];
     }
+    public function addReservation ($reservation)
+    {
+        
+        $request =array ('reservations' => $reservation);
+        $data = $this->request('reservations', 'add', $request);
+
+        return $data['result']['clients'];
+    }
 }
+
+
