@@ -136,11 +136,25 @@ class IdosellApi
 
         return $data['result']['clients'];
     }
+
     public function addReservation ($reservation)
     {
-        
         $request =array ('reservations' => $reservation);
         $data = $this->request('reservations', 'add', $request);
+
+        return $data['result']['clients'];
+    }
+
+    public function addClient($client)
+    {
+        $request = array(
+            'clients' => array(
+                $client
+            )
+        );
+        $data = $this->request('clients', 'add', $request);
+        if(count($data['result']['clients'])==0)
+            return false;
 
         return $data['result']['clients'];
     }
