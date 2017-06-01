@@ -30,7 +30,6 @@ class IdosellApi
     private function request($api, $action, $request)
     {
         $request['authenticate'] = $this->authenticate();
-        var_dump($request);
         $request_json = json_encode($request);
         $headers = array(
             'Accept: application/json',
@@ -75,37 +74,10 @@ class IdosellApi
             )
         );
         $data = $this->request('reservations', 'get', $request);
-        $reservations = array();
-        foreach ($data['result']["reservations"] as $rezerwacja) {
-            $reservation = array();
+        if(count($data['result']['reservations']) == 0)
+            return false;
 
-            $reservation['summary'] = $rezerwacja['client']['firstName'].' '.$rezerwacja['client']['lastName'].' '.$rezerwacja['client']['phone'];
-            $tmp = array();
-            foreach ($rezerwacja["items"] as $item) {
-                $nazwa_pokoju = $item["objectName"];
-                $numer_pokoju = $item["itemCode"];
-                $cena_za_pokoj = $item["prices"][0]["price"]; //pierwsza cena
-
-                $tmp[] = $nazwa_pokoju . ' / ' . $numer_pokoju . ' / ' . $cena_za_pokoj;
-            }
-            $reservation['localization'] = implode(';',$tmp);
-            $reservation['colorId'] = 1;
-
-            $reservation['start']['dateTime'] = $rezerwacja["reservationDetails"]["dateFrom"];
-            $reservation['start']['timeZone'] = 'Poland/Warsaw';
-            $reservation['end']['dateTime'] = $rezerwacja["reservationDetails"]["dateTo"];
-            $reservation['end']['timeZone'] = 'Poland/Warsaw';
-
-            $reservation['attendees'] = array();
-            $reservation['attendees'][] = array(
-                'email' => $rezerwacja['client']['email'],
-                'displayName'=>$rezerwacja['client']['firstName'].' '.$rezerwacja['client']['lastName'],
-                'comment'=>$rezerwacja["reservationDetails"]["clientNote"]
-            );
-
-            $reservations[] = $reservation;
-        }
-        return $reservations;
+        return $data['result']['reservations'];
     }
 
     public function getClientByEmail($email)
