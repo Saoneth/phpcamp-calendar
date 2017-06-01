@@ -66,12 +66,12 @@ class IdosellApi
         return $data;
     }
 
-    public function getReservations()
+    public function getReservations($page=1)
     {
         $request = array(
             'result' => array(
-                'page' => 1,
-                'number' => 2
+                'page' => $page,
+                'number' => 20
             )
         );
         $data = $this->request('reservations', 'get', $request);
@@ -113,7 +113,7 @@ class IdosellApi
         $request = array(
             'result' => array(
                 'page' => 1,
-                'number' => 2
+                'number' => 1
             ),
             'paramsSearch' => array(
                 'email' => $email
@@ -123,7 +123,7 @@ class IdosellApi
         if(count($data['result']['clients']) == 0)
             return false;
 
-        return $data['result']['clients'];
+        return $data['result']['clients'][0];
     }
 
     public function addReservation($reservation)
