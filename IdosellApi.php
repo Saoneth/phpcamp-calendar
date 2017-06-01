@@ -120,18 +120,20 @@ class IdosellApi
             )
         );
         $data = $this->request('clients', 'get', $request);
-        if(count($data['result']['clients'])==0)
+        if(count($data['result']['clients']) == 0)
             return false;
 
         return $data['result']['clients'];
     }
 
-    public function addReservation ($reservation)
+    public function addReservation($reservation)
     {
-        $request =array ('reservations' => $reservation);
+        $request = Array('reservations' => Array($reservation));
         $data = $this->request('reservations', 'add', $request);
+        if(count($data['result']['reservations']) == 0)
+            return false;
 
-        return $data['result']['clients'];
+        return $data['result']['reservations'][0];
     }
 
     public function addClient($client)
@@ -142,7 +144,7 @@ class IdosellApi
             )
         );
         $data = $this->request('clients', 'add', $request);
-        if(count($data['result']['clients'])==0)
+        if(count($data['result']['clients']) == 0)
             return false;
 
         return $data['result']['clients'];

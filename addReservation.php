@@ -1,14 +1,12 @@
 <?php
 
-require_once 'phpcamp-calendar/IdosellApi.php';
+require_once 'IdosellApi.php';
 
 $api = new IdosellApi('3216','phpcamp5','qwerty321');
 
-$address = 'http://client3216.idosell.com/api/reservations/add/3/json';
-
 $reservation = array();
-$reservation['dateFrom'] = "2017-06-01";
-$reservation['dateTo'] = "2017-06-02";
+$reservation['dateFrom'] = "2017-06-03";
+$reservation['dateTo'] = "2017-06-04";
 $reservation['arrivalHour'] = "18:00";
 $reservation['price'] = 1.0;
 $reservation['clientId'] = 55;
@@ -31,9 +29,11 @@ $reservation['items'][0]['price'] = 8.0;
 $reservation['currencyId'] = 1;
 $reservation['notify'] = true;
 
+echo '<pre>';
 var_dump($reservation);
 
 $data = $api ->addReservation($reservation);
+var_dump($data);
 foreach ($data as $reservation) {
     //var_dump($reservation);
 }
