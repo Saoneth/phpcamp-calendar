@@ -87,48 +87,37 @@ class IdosellApi
             )
         );
         $data = $this->request('reservations', 'get', $request);
+        $reservations = array();
         foreach ($data['result']["reservations"] as $rezerwacja) {
-            var_dump($rezerwacja["items"]);
+            $reservation = array();
 
-            echo "</br></br>";
+            $reservation['summary'] = $rezerwacja['client']['firstName'].' '.$rezerwacja['client']['lastName'].' '.$rezerwacja['client']['phone'];
+            $tmp = array();
+            foreach ($rezerwacja["items"] as $item) {
+                $nazwa_pokoju = $item["objectName"];
+                $numer_pokoju = $item["itemCode"];
+                $cena_za_pokoj = $item["prices"][0]["price"]; //pierwsza cena
 
-            $data_poczatkowa = $rezerwacja["reservationDetails"]["dateFrom"];
-            $data_koncowa = $rezerwacja["reservationDetails"]["dateTo"];
-
-            $opis_pokoju = array(); // np Pokoj jednosobowy 200
-
-            for ($i = 0; $i < count($rezerwacja["items"]); $i++) {
-                $nazwa_pokoju = $rezerwacja["items"][$i]["objectName"];
-                $numer_pokoju = $rezerwacja["items"][$i]["itemCode"];
-                $cena_za_pokoj = $rezerwacja["items"][$i]["prices"][0]["price"]; //pierwsza cena
-
-                $opis_pokoju[$i] = $nazwa_pokoju . '//' . $numer_pokoju . '//' . $cena_za_pokoj;
+                $tmp[] = $nazwa_pokoju . ' / ' . $numer_pokoju . ' / ' . $cena_za_pokoj;
             }
+            $reservation['localization'] = implode(';',$tmp);
+            $reservation['colorId'] = 1;
 
-            $imie_rezerwujacego = $rezerwacja['client']['firstName'];
-            $nazwisko_rezerwujacego = $rezerwacja['client']['lastName'];
-            $telefon_rezerwujacego = $rezerwacja['client']['phone'];
+            $reservation['start']['dateTime'] = $rezerwacja["reservationDetails"]["dateFrom"];
+            $reservation['start']['timeZone'] = 'Poland/Warsaw';
+            $reservation['end']['dateTime'] = $rezerwacja["reservationDetails"]["dateTo"];
+            $reservation['end']['timeZone'] = 'Poland/Warsaw';
 
-            // dane do przekazania
-            $status_rezerwacji = $rezerwacja["reservationDetails"]["status"];
-            $data_poczatkowa = $rezerwacja["reservationDetails"]["dateFrom"];
-            $data_koncowa = $rezerwacja["reservationDetails"]["dateTo"];
-            $summary = $imie_rezerwujacego . ' / ' . $nazwisko_rezerwujacego . ' / ' . $telefon_rezerwujacego;
+            $reservation['attendees'] = array();
+            $reservation['attendees'][] = array(
+                'email' => $rezerwacja['client']['email'],
+                'displayName'=>$rezerwacja['client']['firstName'].' '.$rezerwacja['client']['lastName'],
+                'comment'=>$rezerwacja["reservationDetails"]["clientNote"]
+            );
 
-            // zamiana tablicy z opisami pokojow na jednego stringa
-            $opis = '';
-
-            foreach ($opis_pokoju as $p_pokoj) {
-                $opis .= $p_pokoj;
-            }
-
-            $location = $opis;
-
-            echo $status_rezerwacji, '</br>', $data_poczatkowa, '</br>', $data_koncowa, '</br>', $summary, '</br>', $location;
-
-
-            break;
+            $reservations[] = $reservation;
         }
+        return $reservations;
     }
 
     public function getClientByEmail($email)
